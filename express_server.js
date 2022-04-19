@@ -1,5 +1,9 @@
 const express = require("express");
+const bodyParser = require("body-parser");
+
 const app = express();
+app.use(bodyParser.urlencoded({extended: true}));
+
 const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs"); // This tells the Express app to use EJS as its templating engine
@@ -30,7 +34,17 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.post("/urls", (req, res) => {
+  console.log(req.body);  // Log the POST request body to the console
+  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+});
+
 //Event listener on Port: 8080
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+//simulate generating a "unique" shortURL that returns a string of 6 random alphanumeric characters:
+function generateRandomString() {
+  return Math.random().toString(20).slice(2, 8)
+}
