@@ -1,10 +1,12 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-var cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser')
+const { v4: uuidv4 } = require('uuid'); //NPM package that provides a unique identifier
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
+
 
 const PORT = 8080; // setting default port to 8080
 
@@ -15,6 +17,14 @@ const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com" 
 };
+
+const users = { 
+//  "user2RandomID": {
+//     id: uuidv4(), 
+//     email: "user2@example.com", 
+//     password: "dishwasher-funk"
+//   }
+}
 
 // ROUTES
 app.get("/", (req, res) => {
