@@ -18,13 +18,13 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com" 
 };
 
-const users = { 
-//  "user2RandomID": {
-//     id: uuidv4(), 
-//     email: "user2@example.com", 
-//     password: "dishwasher-funk"
-//   }
-}
+const users = {
+  'spiderman': {
+    id: uuidv4(),
+    email:"spiderman@gmail.com",
+    password:"spideysense"
+  }
+};
 
 // ROUTES
 app.get("/", (req, res) => {
@@ -53,8 +53,6 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  console.log(req.body.username)
-  console.log(req.body.password)
   res.render("urls_register")
 });
 
@@ -83,6 +81,23 @@ app.post("/login", (req, res) => {
   res.cookie('username', req.body.username);
   res.redirect("/urls")
 })
+
+//USER REGISTER
+app.post("/register", (req, res) => {
+  const id = uuidv4();
+  const email = req.body.email;
+  const password = req.body.password;
+  const user = {
+    id,
+    email,
+    password
+  };
+
+  users[id] = user
+  res.cookie('user_id',id)
+  console.log(users)
+  res.send("Got your info")
+});
 
 //USER LOGOUT
 app.post("/logout", (req, res) => {
