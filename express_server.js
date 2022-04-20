@@ -40,10 +40,17 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+//CREATE
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
+});
+
+//DELETE
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL]
+  res.redirect("/urls")
 });
 
 
@@ -52,7 +59,7 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-//simulate generating a "unique" shortURL that returns a string of 6 random alphanumeric characters:
+//simulate generating a "unique" shortURL that returns a string of 6 random alphanumeric characters
 function generateRandomString() {
   return Math.random().toString(20).slice(2, 8)
 }
