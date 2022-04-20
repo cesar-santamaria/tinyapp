@@ -11,6 +11,7 @@
       </div>
     </div>
     <div>
+      <!-- logic to display the correct header if user is logged in or logged out. -->
       <% if (!username) { %>
       <form method="POST" action="/login">
         <input class="form-horizontal" type="text" name="username" placeholder="username" style="margin-right: 2rem;">
