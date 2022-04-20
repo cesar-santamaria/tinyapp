@@ -6,33 +6,34 @@ const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
 
-const PORT = 8080; // default port 8080
+const PORT = 8080; // setting default port to 8080
 
-app.set("view engine", "ejs"); // This tells the Express app to use EJS as its templating engine
+app.set("view engine", "ejs"); // Tells the Express app to use EJS as its templating engine
 
-// Mock Data
+// MOCK DATA
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com" 
 };
 
-// Routes
+// ROUTES
 app.get("/", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = {urls: urlDatabase, username: req.cookies["username"]}
+  res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
   res.render("urls_show", templateVars);
 });
 
@@ -47,8 +48,6 @@ app.post("/urls", (req, res) => {
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
 });
-
-
 
 //DELETE
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -65,13 +64,17 @@ app.post("/urls/:shortURL",(req, res) => {
 
 //USER LOGIN
 app.post("/login", (req, res) => {
-  console.log('req.body.username:',req.body.username);
   const username = res.cookie('username', req.body.username);
-
   res.redirect("/urls")
 })
 
-//Event listener on Port: 8080
+//USER LOGOUT
+app.post("/logout", (req, res) => {
+  res.clearCookie('username',req.body.username)
+  res.redirect("/urls")
+})
+
+//SERVER LISTENING ON PORT: 8080
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
