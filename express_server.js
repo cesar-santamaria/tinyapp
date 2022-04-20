@@ -42,6 +42,12 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get("/register", (req, res) => {
+  console.log(req.body.username)
+  console.log(req.body.password)
+  res.render("urls_register")
+});
+
 //CREATE
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
@@ -64,7 +70,7 @@ app.post("/urls/:shortURL",(req, res) => {
 
 //USER LOGIN
 app.post("/login", (req, res) => {
-  const username = res.cookie('username', req.body.username);
+  res.cookie('username', req.body.username);
   res.redirect("/urls")
 })
 
@@ -81,5 +87,5 @@ app.listen(PORT, () => {
 
 //simulate generating a "unique" shortURL that returns a string of 6 random alphanumeric characters
 function generateRandomString() {
-  return Math.random().toString(20).slice(2, 8)
+  return Math.random().toString(20).substring(2, 8)
 }
