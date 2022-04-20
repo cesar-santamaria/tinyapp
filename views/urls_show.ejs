@@ -13,9 +13,11 @@
       <div class="card-header"></div>
       <div class="card-body" style="padding: 0; padding-top: 1rem;">
         <h5 class="card-title">TinyURL for: <%= longURL %></h5>
-        <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
+        <p class="card-text">Short URL: <a href="/u/<%= shortURL %>">
+          <%= shortURL %>
+        </a></p>
         <div style="height: 100%; padding: 1rem; background-color: rgb(229, 226, 226);">
-          <form method="POST" action="/urls/<%= longURL %>">
+          <form method="POST" action="/urls/<%= shortURL %>">
             <h1 style="color: gray;">Edit</h1>
             <div style="display:flex; flex-direction: row; justify-content: center;">
               <label class="" style="display:flex; align-self: center; font-size: 1.3em; color: grey;">New URL:</label>

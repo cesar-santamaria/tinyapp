@@ -36,7 +36,6 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL];
-  console.log('urlDB req para shortURL:',longURL)
   res.redirect(longURL);
 });
 
@@ -47,13 +46,20 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-//UPDATE
-app.post("/urls/:shortURL",(req, res)=> {
-  const longURL = req.params.longURL;
-  console.log(longURL)
-  res.redirect("/urls/:shortURL")
+
+
+//DELETE
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL]
+  res.redirect("/urls")
 });
 
+//UPDATE
+app.post("/urls/:shortURL",(req, res)=> {
+  const shortURL = req.params.shortURL;
+  urlDatabase[shortURL] = req.body.longURL
+  res.redirect("/urls");
+});
 
 //Event listener on Port: 8080
 app.listen(PORT, () => {
