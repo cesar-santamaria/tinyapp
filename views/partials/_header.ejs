@@ -10,5 +10,13 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
+    <div>
+      <form method="POST" action="/login">
+        <input class="form-horizontal" type="text" name="username" placeholder="username" style="margin-right: 2rem;">
+        <button type="submit" class="btn btn-md btn-outline-light" style="margin-right: 3rem;">Login</button>
+      </form>
+    </div>
   </nav>
 </header>
+
+<!-- In the _header.ejs partial of your app, create a <form> that POSTs to /login. -->
