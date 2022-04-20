@@ -12,10 +12,12 @@
   <div class="card text-center">
       <div class="card-header"></div>
       <div class="card-body" style="padding: 0; padding-top: 1rem;">
+        <!-- Display created tiny URL -->
         <h5 class="card-title">TinyURL for: <%= longURL %></h5>
         <p class="card-text">Short URL: <a href="/u/<%= shortURL %>">
           <%= shortURL %>
         </a></p>
+        <!-- Edit already existing URL -->
         <div style="height: 100%; padding: 1rem; background-color: rgb(229, 226, 226);">
           <form method="POST" action="/urls/<%= shortURL %>">
             <h1 style="color: gray;">Edit</h1>

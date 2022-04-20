@@ -1,8 +1,10 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+var cookieParser = require('cookie-parser')
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser())
 
 const PORT = 8080; // default port 8080
 
@@ -55,11 +57,19 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 //UPDATE
-app.post("/urls/:shortURL",(req, res)=> {
+app.post("/urls/:shortURL",(req, res) => {
   const shortURL = req.params.shortURL;
   urlDatabase[shortURL] = req.body.longURL
   res.redirect("/urls");
 });
+
+//USER LOGIN
+app.post("/login", (req, res) => {
+  console.log('req.body.username:',req.body.username);
+  const username = res.cookie('username', req.body.username);
+
+  res.redirect("/urls")
+})
 
 //Event listener on Port: 8080
 app.listen(PORT, () => {
