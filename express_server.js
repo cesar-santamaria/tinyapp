@@ -23,13 +23,13 @@ const urlDatabase = {
 const users = {
   "clarkKentID": {
     id: "clarkKentID",
-    email: "superman@example.com",
-    password: "smallville"
+    email: "ckent@example.com",
+    password: "1234"
   },
   "loisLaneID": {
     id: "loisLaneID",
-    email: "lois@example.com",
-    password: "dailyplanet"
+    email: "llane@example.com",
+    password: "5678"
   }
 };
 
@@ -64,12 +64,17 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   const templateVars = {urls: urlDatabase, user: users[req.cookies.user_id] }
+  const user = users[req.cookies.user_id]
+  
+  if (!user) {
+    return res.status(401).redirect('/login')
+  }
+
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const userId = req.cookies['user_id']
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[userId] };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies.user_id] };
   res.render("urls_show", templateVars);
 });
 
@@ -84,7 +89,6 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  const userId = req.cookies['userId'];
   const templateVars = { user:users[req.cookies.user_id] }
   res.render('urls_login', templateVars)
 });
@@ -93,7 +97,12 @@ app.get("/login", (req, res) => {
 // creates new shortURL and stores it in users database.
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
-  console.log('stores:', shortURL)
+  const user = users[req.cookies.user_id];
+
+  if (!user) {
+    return res.status(401).send('Unauthorized')
+  }
+  
   urlDatabase[shortURL] = req.body.longURL;
   res.redirect(`/urls/${shortURL}`);
 });
