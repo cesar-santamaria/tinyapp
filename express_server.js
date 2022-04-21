@@ -28,22 +28,23 @@ const users = {
 
 // ROUTES
 app.get("/", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
+  console.log(users[req.cookies.user_id])
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = {urls: urlDatabase, username: req.cookies["username"]}
+  const templateVars = {urls: urlDatabase, user: users[req.cookies.user_id] }
   res.render("urls_new", templateVars);
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies.user_id] };
   res.render("urls_show", templateVars);
 });
 
@@ -53,7 +54,8 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  res.render("urls_register")
+  const templateVars = { user: users[req.cookies.user_id] }
+  res.render("urls_register", templateVars)
 });
 
 //CREATE
@@ -78,7 +80,6 @@ app.post("/urls/:shortURL",(req, res) => {
 
 //USER LOGIN
 app.post("/login", (req, res) => {
-  res.cookie('username', req.body.username);
   res.redirect("/urls")
 })
 
@@ -94,14 +95,14 @@ app.post("/register", (req, res) => {
   };
 
   users[id] = user
+
   res.cookie('user_id',id)
-  console.log(users)
   res.send("Got your info")
 });
 
 //USER LOGOUT
 app.post("/logout", (req, res) => {
-  res.clearCookie('username',req.body.username)
+  res.clearCookie('user_id')
   res.redirect("/urls")
 })
 
@@ -114,3 +115,7 @@ app.listen(PORT, () => {
 function generateRandomString() {
   return Math.random().toString(20).substring(2, 8)
 }
+
+/* 
+Update all endpoints that currently pass a username value to the templates to pass the entire user object to the template instead:
+*/
