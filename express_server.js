@@ -34,9 +34,21 @@ const users = {
 };
 
 //Function to generate a "unique" 6 character alphanumeric shortURL
-function generateRandomString() {
+const generateRandomString = () => {
   return Math.random().toString(20).substring(2, 8)
-}
+};
+
+//Helper Function
+const existingUserEmail = (email, users) => {
+  for (const user in users) {
+    if (users[user].email === email) {
+      return users[user];
+    }
+  }
+  return null;
+};
+
+
 
 //----GET----
 //Routes that render ejs templates
@@ -104,18 +116,17 @@ app.post("/urls/:shortURL",(req, res) => {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const foundUser = existingUserEmail(email, users);
 
   if (email === '' || password === '') {
     return res.status(400).send("Please enter a valid email and password");
   }
 
-  let foundUser = null;
-  for (const user in users){
-    if (email === users[user].email) {
-      foundUser = user;
-    }
-  } 
-  res.cookie('user_id',foundUser)
+  if (!foundUser) {
+    res.send("No account found with this email address, please register")
+  }
+  
+  res.cookie('user_id',foundUser.id)
   res.redirect("/urls")
 })
 
@@ -124,6 +135,7 @@ app.post("/register", (req, res) => {
   const id = uuidv4(); //assign unique identifier with the help of NPM package UUID
   const email = req.body.email;
   const password = req.body.password;
+  const foundUser = existingUserEmail(email, users)
   
   // Error condition: if string or password are left empty return error msg.
   if (email === '' || password === '') {
@@ -132,12 +144,8 @@ app.post("/register", (req, res) => {
   }
 
   // Error condtion: if email address already exists return error msg.
-  let foundUser = null;
-  for (const user in users) {
-    if (users[user].email === email) {
-      foundUser = user;
-      return res.status(400).send("Email address already exists")
-    } 
+  if (foundUser) {
+    res.send("This email address is already taken, please try again")
   }
 
   const user = {
