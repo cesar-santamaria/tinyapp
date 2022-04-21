@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser')
 const { v4: uuidv4 } = require('uuid'); //NPM package that provides a unique identifier
+const e = require("express");
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: true}));
@@ -23,7 +24,12 @@ const users = {
     id: uuidv4(),
     email:"spiderman@gmail.com",
     password:"spideysense"
-  }
+  },
+  'superman': {
+    id: uuidv4(),
+    email:"superman@gmail.com",
+    password:"smallville"
+  },
 };
 
 // ROUTES
@@ -58,6 +64,11 @@ app.get("/register", (req, res) => {
   res.render("urls_register", templateVars)
 });
 
+app.get("/login", (req, res) => {
+  const templateVars = { user:users[req.cookies.user_id] }
+  res.render('urls_login', templateVars)
+});
+
 //CREATE
 app.post("/urls", (req, res) => {
   const shortURL = generateRandomString();
@@ -85,9 +96,24 @@ app.post("/login", (req, res) => {
 
 //USER REGISTER
 app.post("/register", (req, res) => {
-  const id = uuidv4();
+  const id = uuidv4(); //assign unique identifier with the help of NPM package UUID
   const email = req.body.email;
   const password = req.body.password;
+
+  // Error condition: if string or password are left empty
+  if (email === '' || password === '') return res.status(400).send("Please enter a valid email and password");
+  
+  let foundUser = null;
+  
+  // Error condtion: if email address already exists.
+  for (const user in users) {
+    if (users[user].email === email) {
+      foundUser = user
+      return res.status(400).send("Email address already exists")
+    } 
+  }
+
+
   const user = {
     id,
     email,
