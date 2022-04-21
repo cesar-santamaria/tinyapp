@@ -10,19 +10,17 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-    <div>
+    <div style="display: flex; flex-direction: row;">
       <!-- logic to display the correct header if user is logged in or logged out. -->
-      <% if (!user) { %>
-        <form method="POST" action="/login">
-          <input class="form-horizontal" type="email" name="email" placeholder="email" style="margin-right: 2rem;">
-          <button type="submit" class="btn btn-md btn-outline-light" style="margin-right: 3rem;">Login </button>
-        </form>
-      <% } else { %>
+      <% if (user) { %>
         <form method="POST" action="/logout">
-          <label style="margin-right: 2rem;"> logged in as: <%= user.email %> !</label>
-          <button type="submit" class="btn btn-md btn-outline-light" style="margin-right: 3rem;">Logout</button>
+          <label class="margin: 1em"> Logged in as: <%= user.email %></label>
+          <button type="submit" class="btn btn-md btn-outline-dark" style="margin-right: 3rem;"> Logout </button>
         </form>
-      <% } %>
+        <% } else { %>
+          <a type="submit" class="btn btn-md btn-outline-light" style="margin-right: 3rem;" href="/login"> Login </a>
+          <a type="submit" class="btn btn-md btn-outline-light" style="margin-right: 3rem;" href="/register"> Register </a>
+        <% } %>
     </div>
   </nav>
 </header>
