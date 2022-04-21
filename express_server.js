@@ -118,14 +118,19 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
   const foundUser = existingUserEmail(email, users);
 
-  if (email === '' || password === '') {
+  if (!email|| !password) {
     return res.status(400).send("Please enter a valid email and password");
   }
 
   if (!foundUser) {
     res.send("No account found with this email address, please register")
   }
-  
+
+  // if passwords dont match from user database return error msg
+  if (foundUser.password !== password) {
+    return res.status(403).send("Email or password does not match")
+  }
+
   res.cookie('user_id',foundUser.id)
   res.redirect("/urls")
 })
@@ -138,7 +143,7 @@ app.post("/register", (req, res) => {
   const foundUser = existingUserEmail(email, users)
   
   // Error condition: if string or password are left empty return error msg.
-  if (email === '' || password === '') {
+  if (!email|| !password) {
     res.status(400).send("Please enter a valid email and password");
     res.end()
   }
