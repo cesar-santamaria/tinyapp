@@ -102,6 +102,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 app.get("/u/:shortURL", (req, res) => {
   const longURL = urlDatabase[req.params.shortURL].longURL
+  console.log(req.params.shortURL)
   res.redirect(longURL);
 });
 
@@ -137,7 +138,13 @@ app.post("/urls", (req, res) => {
 
 // deletes existing entire longURL/shortURL entry from users database.
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const shortURL = req.params.shortURL
+  const shortURL = req.params.shortURL;
+  const userId = req.cookies.user_id;
+
+  if (!userId) {
+    return res.send('Permission denied, must be owner of account to delete url link')
+  }
+
   delete urlDatabase[shortURL]
   res.redirect("/urls")
 });
@@ -145,10 +152,13 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 // replaces/updates existing longURL in users database with new longURL from user input. 
 app.post("/urls/:shortURL",(req, res) => {
   const shortURL = req.params.shortURL;
-
-
-  urlDatabase[shortURL].longURL = req.body.longURL
-  console.log('URL DB:',urlDatabase)
+  const userId = req.cookies.user_id;
+  
+  if (!userId) {
+    return res.send('Permission denied, must be owner of account to edit url link')
+  }
+  
+  urlDatabase[shortURL].longURL = req.body.longURL;
   res.redirect("/urls");
 });
 
