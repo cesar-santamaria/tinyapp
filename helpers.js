@@ -8,7 +8,7 @@ const existingUserEmail = function(email, users) {
 };
 
 const generateRandomString = function() { //generates "unique" random alphanumeric characters
-  return Math.random().toString(20).substring(2, 8)
+  return Math.random().toString(20).substring(2, 8);
 };
 
 const getUserURLs = function(id, urlDatabase) { // returns URLs for for a logged in user
@@ -22,4 +22,4 @@ const getUserURLs = function(id, urlDatabase) { // returns URLs for for a logged
   return savedUserURLs;
 };
 
-module.exports = { generateRandomString, existingUserEmail, getUserURLs }
+module.exports = { generateRandomString, existingUserEmail, getUserURLs };
