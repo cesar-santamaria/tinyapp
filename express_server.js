@@ -16,22 +16,36 @@ app.set("view engine", "ejs"); // Tells the Express app to use EJS as its templa
 
 // MOCK DATA
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com" 
+  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "ckentID"},
+  "9sm5xK": { longURL: "http://www.google.com", userID: "llaneID" }
 };
 
 const users = {
-  "clarkKentID": {
-    id: "clarkKentID",
-    email: "ckent@example.com",
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
     password: "1234"
   },
-  "loisLaneID": {
-    id: "loisLaneID",
-    email: "llane@example.com",
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
     password: "5678"
   }
 };
+
+// ----HELPER FUNCTIONS----
+const getUserURLs = (req) => {
+  let savedUserURLs = {};
+  const user = users[req.cookies.user_id];
+
+  for (const key in urlDatabase) {
+    if (user.id === urlDatabase[key].userID) {
+      savedUserURLs[key] = urlDatabase[key];
+    }
+  }
+  return savedUserURLs;
+}
+
 
 //Function to generate a "unique" 6 character alphanumeric shortURL
 const generateRandomString = () => {
@@ -48,23 +62,31 @@ const existingUserEmail = (email, users) => {
   return null;
 };
 
-
-
 //----GET----
 //Routes that render ejs templates
 app.get("/", (req, res) => {
-  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
+  const user = users[req.cookies.user_id]
+
+  if (!user) {
+    return res.status(401).redirect("/login")
+  }
+  const templateVars = {user: users[req.cookies.user_id]};
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user: users[req.cookies.user_id] };
+  let savedUserURLs = getUserURLs(req);
+  const user = users[req.cookies.user_id];
+  const templateVars = {urls: savedUserURLs, user: user};
+  
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = {urls: urlDatabase, user: users[req.cookies.user_id] }
+  const savedUserURLs = getUserURLs(req);
   const user = users[req.cookies.user_id]
+  
+  const templateVars = {urls: savedUserURLs, user: user }
   
   if (!user) {
     return res.status(401).redirect('/login')
@@ -74,12 +96,12 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies.user_id] };
+  const templateVars = { shortURL: req.params.shortURL, url: urlDatabase[req.params.shortURL], user: users[req.cookies.user_id] };
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL
   res.redirect(longURL);
 });
 
@@ -89,7 +111,12 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/login", (req, res) => {
-  const templateVars = { user:users[req.cookies.user_id] }
+  const templateVars = { user: users[req.cookies.user_id] }
+  const user = users[req.cookies.user_id] 
+
+  if (user) {
+    return res.redirect("/urls");
+  }
   res.render('urls_login', templateVars)
 });
 
@@ -102,8 +129,9 @@ app.post("/urls", (req, res) => {
   if (!user) {
     return res.status(401).send('Unauthorized')
   }
-  
-  urlDatabase[shortURL] = req.body.longURL;
+
+  // urlDatabase[shortURL] = req.body.longURL
+  urlDatabase[shortURL] = { longURL: req.body.longURL, userID: user.id }
   res.redirect(`/urls/${shortURL}`);
 });
 
@@ -117,7 +145,10 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 // replaces/updates existing longURL in users database with new longURL from user input. 
 app.post("/urls/:shortURL",(req, res) => {
   const shortURL = req.params.shortURL;
-  urlDatabase[shortURL] = req.body.longURL
+
+
+  urlDatabase[shortURL].longURL = req.body.longURL
+  console.log('URL DB:',urlDatabase)
   res.redirect("/urls");
 });
 
