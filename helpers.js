@@ -1,6 +1,5 @@
 const existingUserEmail = function(email, users) {
   for (const user in users) {
-    console.log('USERS',users)
     if (users[user].email === email) {
       return users[user];
     }
