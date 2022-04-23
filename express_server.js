@@ -4,7 +4,7 @@ const cookieSession = require('cookie-session');
 const morgan = require('morgan');
 const { v4: uuidv4 } = require('uuid'); //NPM package that provides a unique identifier
 const bcrypt = require('bcryptjs');
-const { urlDatabase, users } = require ('./database')
+const { urlDatabase, users } = require('./database');
 const { generateRandomString, existingUserEmail, getUserURLs } = require('./helpers');
 
 const app = express();
@@ -35,9 +35,14 @@ app.get("/", (req, res) => {
 // render index ejs template
 app.get("/urls", (req, res) => {
   const user = users[req.session.user_id];
+
+  if (!user) {
+    res.status(404);
+    res.render("urls_error", null);
+  }
+
   let savedUserURLs = getUserURLs(user, urlDatabase);
   const templateVars = {urls: savedUserURLs, user: user};
-  
   res.render("urls_index", templateVars);
 });
 
@@ -57,12 +62,27 @@ app.get("/urls/new", (req, res) => {
 
 // render show ejs template to display user created shortURL
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, url: urlDatabase[req.params.shortURL], user: users[req.session.user_id] };
+  const user = users[req.session.user_id];
+  const templateVars = { shortURL: req.params.shortURL, url: urlDatabase[req.params.shortURL], user: user };
+
+  if (templateVars.url === undefined) {
+    res.status(404).send('Error 404: The short URL you are trying to access does not exist');
+  }
+
+  if (!user) {
+    res.status(401);
+    res.render("urls_error", null);
+  }
+
   res.render("urls_show", templateVars);
 });
 
 // redirect user to URL links webpage
 app.get("/u/:shortURL", (req, res) => {
+  const shortURL = urlDatabase[req.params.shortURL];
+  if (shortURL === undefined) {
+    res.status(404).send('Error 404: The short URL you are trying to access does not exist');
+  }
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
