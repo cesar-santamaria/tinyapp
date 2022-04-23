@@ -4,6 +4,7 @@ const cookieSession = require('cookie-session');
 const morgan = require('morgan');
 const { v4: uuidv4 } = require('uuid'); //NPM package that provides a unique identifier
 const bcrypt = require('bcryptjs');
+const { urlDatabase, users } = require ('./database')
 const { generateRandomString, existingUserEmail, getUserURLs } = require('./helpers');
 
 const app = express();
@@ -17,29 +18,7 @@ app.use(cookieSession({
   keys: ['my','secret','keys']
 }));
 
-
 app.set("view engine", "ejs"); // Express app to use EJS as its templating engine
-
-// mock data
-const urlDatabase = {
-  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userID: "ckentID"},
-  "9sm5xK": { longURL: "http://www.google.com", userID: "llaneID" }
-};
-
-const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "$2b$10$7JHZ2AZr.s48bX3UYCIJYOOc1ZxcLTJm0wyG7Ww//BFgF5v8Exzu2"
-    // password: "1234"
-  },
-  "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "$2b$10$7ozzzE0f42EPABOvQEPJWuiuntejoAQaiWS4YwyilDTGEpnmiWIe2"
-    // password: "dishwasher-funk"
-  }
-};
 
 //----GET----
 // homepage
